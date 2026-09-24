@@ -8,6 +8,8 @@ interface User {
   role: string;
   avatar?: string;
   addresses?: Array<{title: string, text: string}>;
+  city?: string;
+  skill?: string;
 }
 
 interface AuthContextType {
@@ -87,5 +89,6 @@ export const useAuth = () => {
   if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
+
 
 
