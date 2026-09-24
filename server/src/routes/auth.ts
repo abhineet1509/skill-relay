@@ -20,7 +20,7 @@ router.get('/me', authenticate, authController.getMe);
 router.post('/address', authenticate, async (req, res) => {
   try {
     const { title, text } = req.body;
-    const user = await import('../models/User').then(m => m.User.findById(req.user.id));
+    const user = await import('../models/User').then(m => m.User.findById((req as any).user.id));
     if (!user) return res.status(404).json({ success: false });
     
     if (!user.addresses) user.addresses = [];
@@ -34,6 +34,7 @@ router.post('/address', authenticate, async (req, res) => {
 });
 
 export default router;
+
 
 
 
