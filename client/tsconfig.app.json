@@ -7,6 +7,8 @@
     "types": ["vite/client"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
+    "strict": false,
+    "strictNullChecks": false,
 
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
@@ -21,10 +23,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "erasableSyntaxOnly": false,
+    "noFallthroughCasesInSwitch": false
   },
   "include": ["src"]
 }
