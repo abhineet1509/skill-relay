@@ -1,10 +1,20 @@
 ﻿import nodemailer from 'nodemailer';
 
 export const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // Use true for 465, false for 587
   auth: {
     user: process.env.EMAIL_USER || 'kumarabhineet409@gmail.com',
     pass: process.env.EMAIL_PASS || 'jgwe ovea cdfd lqwe'
+  }
+});
+
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error('SMTP CONNECTION ERROR (Render is likely blocking port 465 or invalid password):', error);
+  } else {
+    console.log('SMTP Server is ready to take our messages');
   }
 });
 
@@ -160,4 +170,5 @@ export const sendOTPEmail = async (toEmail: string, otp: string) => {
     return false;
   }
 };
+
 
