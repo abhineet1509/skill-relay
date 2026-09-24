@@ -1,0 +1,22 @@
+﻿import { z } from 'zod';
+import { UserRole } from '../models/User';
+
+export const registerSchema = z.object({
+  body: z.object({
+    name: z.string().min(2, 'Name must be at least 2 characters'),
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    phone: z.string().optional(),
+    role: z.nativeEnum(UserRole).optional(),
+    skill: z.string().optional(),
+    experience: z.union([z.string(), z.number()]).optional(),
+    city: z.string().optional()
+  }).passthrough()
+}).passthrough();
+
+export const loginSchema = z.object({
+  body: z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(1, 'Password is required')
+  }).passthrough()
+}).passthrough();
