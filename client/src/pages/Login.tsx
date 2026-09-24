@@ -58,7 +58,7 @@ export function Login() {
             </div>
             <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required className="mt-1" />
           </div>
-          <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-700">Sign In</Button>
+          <Button type="submit" className="w-full bg-gray-900 text-white hover:bg-gray-800">Sign In</Button>
         </form>
 
         <div className="relative my-4">
@@ -89,6 +89,7 @@ export function Login() {
     </div>
   );
 }
+
 
 
 

@@ -77,7 +77,7 @@ export function Register() {
               <label className="block text-sm font-medium text-gray-700">Password</label>
               <Input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required className="mt-1" />
             </div>
-            <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-700">Register</Button>
+            <Button type="submit" className="w-full bg-gray-900 text-white hover:bg-gray-800">Register</Button>
           </form>
         ) : (
           <form onSubmit={handleVerify} className="space-y-4">
@@ -96,7 +96,7 @@ export function Register() {
                 maxLength={6}
               />
             </div>
-            <Button type="submit" className="w-full bg-gray-900 hover:bg-gray-700">Verify & Continue</Button>
+            <Button type="submit" className="w-full bg-gray-900 text-white hover:bg-gray-800">Verify & Continue</Button>
             <button type="button" onClick={() => { setStep(1); setOtp(''); setError(''); }} className="w-full text-sm text-gray-500 hover:text-gray-700">
               Go back
             </button>
@@ -133,6 +133,7 @@ export function Register() {
     </div>
   );
 }
+
 
 
 
