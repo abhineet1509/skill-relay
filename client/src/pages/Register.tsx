@@ -21,7 +21,7 @@ export function Register() {
     e.preventDefault();
     setError('');
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { name, email, password });
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/register`, { name, email, password });
       setStep(2);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed');
@@ -32,7 +32,7 @@ export function Register() {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/verify-otp', { email, otp }, { withCredentials: true });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/verify-otp`, { email, otp }, { withCredentials: true });
       if (response.data.success) {
         login(response.data.user);
         navigate('/profile');
@@ -44,7 +44,7 @@ export function Register() {
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/google', { token: credentialResponse.credential }, { withCredentials: true });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`, { token: credentialResponse.credential }, { withCredentials: true });
       if (response.data.success) {
         login(response.data.user);
         navigate('/profile');

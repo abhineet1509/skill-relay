@@ -19,7 +19,7 @@ export function TechnicianDashboard() {
 
   const fetchRequests = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/technician/${user.email}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bookings/technician/${user.email}`);
       const data = await res.json();
       if (data.success) setRequests(data.bookings);
     } catch (err) {
@@ -36,7 +36,7 @@ export function TechnicianDashboard() {
     try {
       const formData = new FormData();
       formData.append('avatar', file);
-      const res = await fetch('http://localhost:5000/api/upload/avatar', { method: 'POST', credentials: 'include', body: formData });
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/upload/avatar`, { method: 'POST', credentials: 'include', body: formData });
       const data = await res.json();
       if (data.success) {
         login({ ...user, avatar: data.avatarUrl });
@@ -51,7 +51,7 @@ export function TechnicianDashboard() {
 
   const handleStatusChange = async (id: string, status: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/${id}/status`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bookings/${id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })

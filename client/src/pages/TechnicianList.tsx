@@ -18,7 +18,7 @@ export function TechnicianList() {
   const fetchTechs = async () => {
     setLoading(true);
     try {
-      const url = q ? `http://localhost:5000/api/technicians?search=${encodeURIComponent(q)}` : `http://localhost:5000/api/technicians`;
+      const url = q ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/technicians?search=${encodeURIComponent(q)}` : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/technicians`;
       const res = await fetch(url);
       const data = await res.json();
       if (data.success) {

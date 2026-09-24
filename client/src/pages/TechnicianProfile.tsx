@@ -15,7 +15,7 @@ export function TechnicianProfile() {
   useEffect(() => {
     const fetchTech = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/technicians/${id}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/technicians/${id}`);
         const data = await res.json();
         if (data.success) {
           setTech(data.technician);
@@ -33,7 +33,7 @@ export function TechnicianProfile() {
     if (!user) return navigate('/login');
     setBookingStatus('Booking...');
     try {
-      const res = await fetch('http://localhost:5000/api/bookings/book', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bookings/book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

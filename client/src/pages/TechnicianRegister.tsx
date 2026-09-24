@@ -29,7 +29,7 @@ export function TechnicianRegister() {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/auth/register', {
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/register`, {
         name,
         email,
         password,
@@ -49,7 +49,7 @@ export function TechnicianRegister() {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/verify-otp', { email, otp }, { withCredentials: true });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/verify-otp`, { email, otp }, { withCredentials: true });
       if (response.data.success) {
         login(response.data.user);
         navigate('/technician/dashboard');
@@ -146,7 +146,7 @@ export function TechnicianRegister() {
               onClick={async () => {
                 setError('');
                 try {
-                  await axios.post('http://localhost:5000/api/auth/register', { name, email, password, phone, role: 'TECHNICIAN', skill, experience, city });
+                  await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/register`, { name, email, password, phone, role: 'TECHNICIAN', skill, experience, city });
                   setError('');
                   alert('New OTP sent! Check your email.');
                 } catch (err: any) {

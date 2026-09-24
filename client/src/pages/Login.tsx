@@ -17,7 +17,7 @@ export function Login() {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password }, { withCredentials: true });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login`, { email, password }, { withCredentials: true });
       if (response.data.success) {
         login(response.data.user);
         navigate(response.data.user.role === 'TECHNICIAN' ? '/technician/dashboard' : '/profile');
@@ -29,7 +29,7 @@ export function Login() {
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/google', { token: credentialResponse.credential }, { withCredentials: true });
+      const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/google`, { token: credentialResponse.credential }, { withCredentials: true });
       if (response.data.success) {
         login(response.data.user);
         navigate(response.data.user.role === 'TECHNICIAN' ? '/technician/dashboard' : '/profile');

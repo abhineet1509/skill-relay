@@ -17,7 +17,7 @@ export function CustomerDashboard() {
 
   useEffect(() => {
     if (user?.email) {
-      fetch(`http://localhost:5000/api/bookings/customer/${user.email}`)
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/bookings/customer/${user.email}`)
         .then(res => res.json())
         .then(data => { if (data.success) setOrderHistory(data.bookings); });
     }
@@ -30,7 +30,7 @@ export function CustomerDashboard() {
     try {
       const formData = new FormData();
       formData.append('avatar', file);
-      const res = await fetch('http://localhost:5000/api/upload/avatar', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/upload/avatar`, {
         method: 'POST',
         credentials: 'include',
         body: formData
@@ -53,7 +53,7 @@ export function CustomerDashboard() {
     e.preventDefault();
     if (!newTitle || !newText) return;
     try {
-      const res = await fetch('http://localhost:5000/api/auth/address', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/address`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newTitle, text: newText }),
