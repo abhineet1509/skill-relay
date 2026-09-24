@@ -153,10 +153,11 @@ export const sendOTPEmail = async (toEmail: string, otp: string) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    try { await transporter.sendMail(mailOptions); } catch (err) { console.error('EMAIL FAILED TO SEND. OTP IS:', otp, err); }
     return true;
   } catch (error) {
     console.error('Error sending OTP:', error);
     return false;
   }
 };
+
