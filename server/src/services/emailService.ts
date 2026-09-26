@@ -1,25 +1,48 @@
-import nodemailer from 'nodemailer';
-
 const EMAIL_USER = process.env.EMAIL_USER || 'kumarabhineet409@gmail.com';
-const EMAIL_PASS = process.env.EMAIL_PASS || 'frhd oadq lrok qapb';
+const EMAIL_API_URL = process.env.EMAIL_API_URL || 'https://api.brevo.com/v3/smtp/email'; // Default to Brevo API
+const EMAIL_API_KEY = process.env.EMAIL_API_KEY || ''; // Add your Brevo or Email API Key here
 
-export const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Use STARTTLS on port 587 (more reliable across cloud hosts)
-  auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASS,
-  },
-});
-
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error('SMTP CONNECTION ERROR (check EMAIL_USER/EMAIL_PASS in .env or network access to smtp.gmail.com:587):', error);
-  } else {
-    console.log('SMTP Server is ready to take our messages');
+const sendEmailViaAPI = async (to: string, subject: string, html: string) => {
+  if (!EMAIL_API_KEY) {
+    console.error('Missing EMAIL_API_KEY in environment variables. Email sending aborted.');
+    return false;
   }
-});
+
+  try {
+    // Assuming Brevo (Sendinblue) API format for the payload as it's a popular free choice
+    // If using a different provider (like Resend, SendGrid), adjust the payload body and headers accordingly.
+    const response = await fetch(EMAIL_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': EMAIL_API_KEY, // Brevo uses 'api-key'. Resend uses 'Authorization: Bearer ...'
+        // 'Authorization': `Bearer ${EMAIL_API_KEY}`, // Uncomment if using Resend/Sendgrid
+      },
+      body: JSON.stringify({
+        sender: { name: 'SkillRelay', email: EMAIL_USER },
+        to: [{ email: to }],
+        subject: subject,
+        htmlContent: html,
+        // For Resend:
+        // from: `SkillRelay <${EMAIL_USER}>`,
+        // to: [to],
+        // subject: subject,
+        // html: html,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('Email API Error:', response.status, errorData);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Fetch error when sending email:', error);
+    return false;
+  }
+};
 
 export const sendBookingConfirmationEmail = async (
   customerEmail: string,
@@ -35,11 +58,7 @@ export const sendBookingConfirmationEmail = async (
 ) => {
   const { customerName, technicianName, skill, cost, distance, bookingId } = bookingDetails;
 
-  const customerMail = {
-    from: `"SkillRelay" <${EMAIL_USER}>`,
-    to: customerEmail,
-    subject: `Booking Confirmed - ${skill} | SkillRelay`,
-    html: `
+  const customerHtml = `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
         <div style="background:#111827;padding:24px 32px;">
           <h1 style="color:#fff;margin:0;font-size:22px;">SkillRelay</h1>
@@ -81,14 +100,9 @@ export const sendBookingConfirmationEmail = async (
           </p>
         </div>
       </div>
-    `
-  };
+    `;
 
-  const techMail = {
-    from: `"SkillRelay" <${EMAIL_USER}>`,
-    to: technicianEmail,
-    subject: `New Booking Request - ${skill} | SkillRelay`,
-    html: `
+  const techHtml = `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
         <div style="background:#111827;padding:24px 32px;">
           <h1 style="color:#fff;margin:0;font-size:22px;">SkillRelay</h1>
@@ -130,27 +144,23 @@ export const sendBookingConfirmationEmail = async (
           </p>
         </div>
       </div>
-    `
-  };
+    `;
 
-  try {
-    await transporter.sendMail(customerMail);
-    console.log(`Booking confirmation sent to customer: ${customerEmail}`);
-    await transporter.sendMail(techMail);
-    console.log(`Booking request sent to technician: ${technicianEmail}`);
-    return true;
-  } catch (error) {
-    console.error('Error sending booking emails:', error);
-    return false;
+  const customerSuccess = await sendEmailViaAPI(customerEmail, \`Booking Confirmed - \${skill} | SkillRelay\`, customerHtml);
+  if (customerSuccess) {
+    console.log(\`Booking confirmation sent to customer: \${customerEmail}\`);
   }
+
+  const techSuccess = await sendEmailViaAPI(technicianEmail, \`New Booking Request - \${skill} | SkillRelay\`, techHtml);
+  if (techSuccess) {
+    console.log(\`Booking request sent to technician: \${technicianEmail}\`);
+  }
+
+  return customerSuccess && techSuccess;
 };
 
 export const sendOTPEmail = async (toEmail: string, otp: string) => {
-  const mailOptions = {
-    from: `"SkillRelay" <${EMAIL_USER}>`,
-    to: toEmail,
-    subject: 'Your Verification Code - SkillRelay',
-    html: `
+  const html = \`
       <div style="font-family:Arial,sans-serif;max-width:500px;margin:auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
         <div style="background:#111827;padding:24px 32px;">
           <h1 style="color:#fff;margin:0;font-size:22px;">SkillRelay</h1>
@@ -158,21 +168,22 @@ export const sendOTPEmail = async (toEmail: string, otp: string) => {
         <div style="padding:32px;text-align:center;">
           <h2 style="color:#111827;">Verify your email</h2>
           <p style="color:#6b7280;">Use the code below to complete your registration. It expires in 30 minutes.</p>
-          <div style="font-size:40px;font-weight:700;letter-spacing:12px;color:#111827;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin:24px 0;">${otp}</div>
+          <div style="font-size:40px;font-weight:700;letter-spacing:12px;color:#111827;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px;margin:24px 0;">\${otp}</div>
           <p style="color:#9ca3af;font-size:12px;">If you did not request this, ignore this email.</p>
         </div>
       </div>
-    `
-  };
+    \`;
 
-  try {
-    await transporter.sendMail(mailOptions);
-    console.log(`OTP email sent successfully to: ${toEmail}`);
+  const success = await sendEmailViaAPI(toEmail, 'Your Verification Code - SkillRelay', html);
+  
+  if (success) {
+    console.log(\`OTP email sent successfully to: \${toEmail}\`);
     return true;
-  } catch (error) {
-    console.error('EMAIL FAILED TO SEND. OTP IS:', otp, error);
+  } else {
+    console.error('EMAIL FAILED TO SEND. OTP IS:', otp);
     return false;
   }
 };
+
 
 
