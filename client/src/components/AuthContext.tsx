@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface User {
@@ -44,7 +44,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: u.email,
             role: u.role,
             avatar: buildAvatar(u),
-            addresses: u.addresses || []
+            addresses: u.addresses || [],
+            skill: u.skill,
+            city: u.city,
           });
         }
       } catch {
@@ -63,7 +65,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email: u.email,
       role: u.role,
       avatar: buildAvatar(u),
-      addresses: u.addresses || []
+      addresses: u.addresses || [],
+      skill: u.skill,
+      city: u.city,
     });
   };
 

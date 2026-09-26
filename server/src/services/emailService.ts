@@ -1,18 +1,21 @@
-﻿import nodemailer from 'nodemailer';
+import nodemailer from 'nodemailer';
+
+const EMAIL_USER = process.env.EMAIL_USER || 'kumarabhineet409@gmail.com';
+const EMAIL_PASS = process.env.EMAIL_PASS || 'jgwe ovea cdfd lqwe';
 
 export const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // Use true for 465, false for 587
+  port: 587,
+  secure: false, // Use STARTTLS on port 587 (more reliable across cloud hosts)
   auth: {
-    user: process.env.EMAIL_USER || 'kumarabhineet409@gmail.com',
-    pass: process.env.EMAIL_PASS || 'jgwe ovea cdfd lqwe'
-  }
+    user: EMAIL_USER,
+    pass: EMAIL_PASS,
+  },
 });
 
 transporter.verify(function (error, success) {
   if (error) {
-    console.error('SMTP CONNECTION ERROR (Render is likely blocking port 465 or invalid password):', error);
+    console.error('SMTP CONNECTION ERROR (check EMAIL_USER/EMAIL_PASS in .env or network access to smtp.gmail.com:587):', error);
   } else {
     console.log('SMTP Server is ready to take our messages');
   }
@@ -33,7 +36,7 @@ export const sendBookingConfirmationEmail = async (
   const { customerName, technicianName, skill, cost, distance, bookingId } = bookingDetails;
 
   const customerMail = {
-    from: `"SkillRelay" <${process.env.EMAIL_USER}>`,
+    from: `"SkillRelay" <${EMAIL_USER}>`,
     to: customerEmail,
     subject: `Booking Confirmed - ${skill} | SkillRelay`,
     html: `
@@ -82,7 +85,7 @@ export const sendBookingConfirmationEmail = async (
   };
 
   const techMail = {
-    from: `"SkillRelay" <${process.env.EMAIL_USER}>`,
+    from: `"SkillRelay" <${EMAIL_USER}>`,
     to: technicianEmail,
     subject: `New Booking Request - ${skill} | SkillRelay`,
     html: `
@@ -144,7 +147,7 @@ export const sendBookingConfirmationEmail = async (
 
 export const sendOTPEmail = async (toEmail: string, otp: string) => {
   const mailOptions = {
-    from: `"SkillRelay" <${process.env.EMAIL_USER}>`,
+    from: `"SkillRelay" <${EMAIL_USER}>`,
     to: toEmail,
     subject: 'Your Verification Code - SkillRelay',
     html: `
@@ -163,10 +166,11 @@ export const sendOTPEmail = async (toEmail: string, otp: string) => {
   };
 
   try {
-    try { await transporter.sendMail(mailOptions); } catch (err) { console.error('EMAIL FAILED TO SEND. OTP IS:', otp, err); }
+    await transporter.sendMail(mailOptions);
+    console.log(`OTP email sent successfully to: ${toEmail}`);
     return true;
   } catch (error) {
-    console.error('Error sending OTP:', error);
+    console.error('EMAIL FAILED TO SEND. OTP IS:', otp, error);
     return false;
   }
 };
