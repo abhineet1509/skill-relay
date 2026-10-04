@@ -1,4 +1,4 @@
-﻿import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as authService from '../services/auth';
 import { ENV } from '../config/env';
 import jwt from 'jsonwebtoken';
@@ -8,13 +8,13 @@ const setCookies = (res: Response, accessToken: string, refreshToken: string) =>
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     secure: ENV.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: ENV.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 15 * 60 * 1000
   });
   res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure: ENV.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: ENV.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000
   });
 };
